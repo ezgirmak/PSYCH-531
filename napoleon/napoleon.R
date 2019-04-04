@@ -28,6 +28,7 @@ ggplot(troops, aes(x = long, y = lat, group = group,
   geom_path(lineend = "round")+
   scale_size(range = c(0.5, 15))
 
+
 #remove labels and adjust colors
 ggplot(troops, aes(x = long, y = lat, group = group, 
                    color = direction, size = survivors)) +
@@ -54,3 +55,17 @@ ggplot() +
 ## Can you add in the temperature plot?
 temps <- read.table("temps.txt", header=T)
 temps$date <- as.Date(strptime(temps$date,"%d%b%Y"))
+temps$lat <- cities$lat[]
+
+
+ggplot() +
+  geom_path(data = troops, aes(x = long, y = lat, group = group, 
+                               color = direction, size = survivors),
+            lineend = "round") +
+  geom_point(data = cities, aes(x = long, y = lat)) +
+  geom_text(data=temps, aes(x=long, y=late))
+  geom_text(data = cities, aes(x = long, y = temp, label = city),col="red", vjust = 1.5) +
+  scale_size(range = c(0.5, 15)) + 
+  scale_colour_manual(values = c("#DFC17E", "#252523")) +
+  labs(x = NULL, y = NULL) + 
+  guides(color = FALSE, size = FALSE)
