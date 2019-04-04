@@ -1,0 +1,26 @@
+---
+title: "PSYCH531 Notes"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+## Tidyverse Verbs
+
+select() chosose and rename columns. 
+
+filter() choose rows based on onditions
+
+mutate() add column 
+
+groupby() make subgroups based on a column 
+
+```{r}
+library(tidyverse)
+
+movies <- read_delim('/home/ezgi/Documents/Spring2019/PSYCH-531/movies/movies_imdb.txt', ',')
+movies %>%
+  select(movie_title, title_year, duration, imdb_score)%>%
+  filter(title_year<=2000, imdb_score<5)
+```
+

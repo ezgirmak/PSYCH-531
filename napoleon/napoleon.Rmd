@@ -21,7 +21,7 @@ troops
 plot just the paths
 ```{r}
 ggplot(troops, aes(x = long, y = lat, group = battalion)) +
-  geom_path()
+  geom_path() #difference between geom_line and geom_path is that geom_path connects the doth
 ```
 
 now add in some color based on the direction of (advance vs. retreat)
@@ -29,6 +29,7 @@ now add in some color based on the direction of (advance vs. retreat)
 ggplot(troops, aes(x = long, y = lat, group = battalion, 
                    color = direction, size = survivors)) +
       geom_path()
+
 ```
 
 round the ends of the path, so that it connects better
@@ -61,7 +62,7 @@ ggplot(troops, aes(x = long, y = lat, group = battalion,
 Add in the city labels
 ```{r}
 ggplot() +
-  geom_path(data = troops, aes(x = long, y = lat, group = group, 
+  geom_path(data = troops, aes(x = long, y = lat, group = battalion, 
                                color = direction, size = survivors),
             lineend = "round") +
   geom_point(data = cities, aes(x = long, y = lat)) +
