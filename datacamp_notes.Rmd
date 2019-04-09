@@ -1,0 +1,38 @@
+---
+title: "R Data Camp Notes"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+### Tidyverse 
+
+## DPLYR 
+
+We can use \textbf{filter()} to select data in specific columns. 
+
+```{r}
+library(gapminder)
+library(dplyr)
+
+# Filter for China in 2002
+gapminder %>%
+  filter(country=="China", year==2002)
+```
+
+
+We can use \textbf{arrange()} to sort values. 
+```{r}
+
+# Sort in ascending order of lifeExp
+gapminder %>%
+  arrange(lifeExp)
+
+  
+# Sort in descending order of lifeExp
+gapminder %>%
+  arrange(desc(lifeExp))
+
+```
+
+We can use \textbf{mutate()}
