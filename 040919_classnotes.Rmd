@@ -1,0 +1,63 @@
+---
+title: "Class Notes for April 9, 2019"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+drinks = read.delim('/home/ezgi/Documents/Spring2019/PSYCH-531/drinks/drinks_US.tsv')
+```
+
+
+Load data: 
+
+```{r}
+movies_imdb = read_delim('/home/ezgi/Documents/Spring2019/PSYCH-531/movies/movies_imdb.txt', delim=',')
+movies_rottentom = read_delim('/home/ezgi/Documents/Spring2019/PSYCH-531/movies/movies_rottentom.txt', delim=',')
+```
+
+```{r}
+movies_imdb%>%
+    select(movie_title,title_year, duration, imdb_score) %>%
+    filter(title_year<=2000  & imdb_score<5) 
+```
+
+```{r}
+movies_imdb%>%
+    select(movie_title,title_year, duration, imdb_score) %>%
+    mutate(imdb_score_squared =  imdb_score^2)
+```
+```{r}
+movies_imdb%>%
+    select(movie_title,title_year, duration, imdb_score) %>%
+    group_by(title_year)%>%
+    summarize(mean_score=mean(imdb_score, na.rm=T))
+```
+```{r}
+movies_imdb%>%
+  filter(title_year>1990) %>%
+  summarize(mean_score = mean(imdb_score))
+
+```
+
+Tidy can make tables into long and wide format
+
+```{r}
+drinks_long <- drinks %>% gather(key=type, value=gallons, beer:spirits)
+drinks_long
+```
+```{r}
+library(skimr)
+imdb_minimal <- movies_imdb %>%
+                select(movie_title, title_year, duration, imdb_score)
+joined <- full_join(x=imdb_minimal, y=movies_rottentom, by=c('movie_title'='title')) 
+joined
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(data=joined, aes(x= imdb_score, y=rotten_tomatoes)) +geom_point()
+
+```
+
