@@ -2,6 +2,7 @@ start your engines (load your packages)
 ```{r}
 library(tidyverse)
 
+#no grid larger text 
 theme_set(theme_classic(base_size = 20)) 
 ```
 
@@ -15,6 +16,7 @@ read in drinks and convert it to long format with just beer, wine, and spirits
 ```{r}
 drinks=read_delim("drinks/drinks_US.tsv",delim="\t")
 
+
 drinks_long=drinks %>% select(-total) %>% gather(key=type,value=gallons,beer:spirits)
 
 drinks_long
@@ -25,6 +27,10 @@ ggplot(data=drinks_long,aes(x=year,y=gallons))+geom_point()
 make some plots (what can we do to make this better?)
 ```{r}
 ggplot(data=drinks_long,aes(x=year,y=gallons))+geom_point()
+```
+```{r}
+ggplot(data=drinks_long,aes(x=year,y=gallons, col = type))+geom_point()
+
 ```
 
 line plot? wow -that's weird....
@@ -44,10 +50,15 @@ ggplot(data=drinks_long,aes(x=year,y=gallons,group=type,col=type))+geom_line()
 ## note that when you use "color" or "fill" it automatically passes that same argument to "group", so this line is effectively the same
 ggplot(data=drinks_long,aes(x=year,y=gallons,col=type))+geom_line()
 ```
+```{r}
+ggplot(data=drinks_long, aes(x=year, y=gallons)) +geom_line(aes(col =type)) +stat_smooth(se=FALSE)
+``` 
+
+
 
 What about better colors? (What's wrong with this code? Why doesn't it work?)
 ```{r}
-ggplot(data=drinks_long,aes(x=year,y=gallons,col=type))+geom_line()+scale_color_manual(values = c("black","red"))
+ggplot(data=drinks_long,aes(x=year,y=gallons,col=type))+geom_line()+scale_color_manual(values = c("black","red", "yellow")) +ggtitle('deutschland uber alles')
 ```
 
 What about better colors?
@@ -72,6 +83,9 @@ ggplot(data=drinks_long,aes(x=year,y=gallons,fill=type))+geom_area()+scale_fill_
 
 ggplot(data=drinks_long,aes(x=year,y=gallons,fill=type))+geom_area()+scale_fill_hue(l=45)
 
+```
+```{r}
+ggplot(data= drinks_long, aes(x = year, y= gallons)) + geom_line(aes(col=type)) +facet_grid(~type)
 ```
 
 ##Faceting
@@ -101,6 +115,7 @@ using str_detect and str_subset: which one returns a logical?
 str_detect(movies_imdb$genres,"Action")
 str_subset(movies_imdb$genres,"Action")
 str_subset(movies_imdb$genres,"action")  ## what's up with this output? Why is it different than the line above? 
+
 ```
 
 stringr and filter()
@@ -111,13 +126,19 @@ action_movies
 ## looks like more action movies have been made recently, but is this true? What's our null expectation given the data? 
 ggplot(action_movies,aes(x=title_year))+geom_histogram() + xlab("movie release (year)")
 ```
-
-What about movies with a lead actor whose name begins with "Ch"
 ```{r}
-movies_imdb %>% filter(str_detect(actor_1_name,"^Ch"))%>% select(actor_1_name,title_year,movie_title,everything())
+ggplot(action_movies,aes(x=title_year))+geom_histogram() + xlab("movie release (year)")
+
 ```
 
-What about movies with a lead actor whose name ends with "son"
+What about movies with a lead actor whose name begins with "Ch" Caret, ^ means look for Ch in the beginning of the string
+```{r}
+
+movies_imdb %>% filter(str_detect(actor_1_name,"^Ch"))%>% select(actor_1_name,title_year,movie_title,everything())
+
+```
+
+What about movies with a lead actor whose name ends with "son" $ sign means ends with 'on' expression.
 ```{r}
 movies_imdb %>% filter(str_detect(actor_1_name,"on$"))%>% select(actor_1_name,title_year,movie_title,everything())
 ```
@@ -127,7 +148,10 @@ use str_to_lower() and str_to_upper() to fix that
 
 
 Dates are fun
+
+Use lubridate to clean up dates. 
 ```{r}
+#converts character vectors to date formatted
 library(lubridate)
 ymd(20101215)
 ymd("2010/12/15")
@@ -138,4 +162,6 @@ date1=ymd("2010 Dec 15")
 year(date1)
 month(date1)
 mday(date1)
+
+class(date1)
 ```

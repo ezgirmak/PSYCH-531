@@ -1,0 +1,104 @@
+---
+title: "041619-classnotes"
+author: "Ezgi Irmak Yucel"
+date: "April 16, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+library(ggplot2)
+library(tidyverse)
+library(ggrepel)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+movies_imdb = read_delim('/home/ezgi/Documents/Spring2019/PSYCH-531/movies/movies_imdb.txt', delim=',')
+movies_rottentom = read_delim('/home/ezgi/Documents/Spring2019/PSYCH-531/movies/movies_rottentom.txt', delim=',')
+```
+```{r}
+joined <- full_join(x=movies_imdb, y=movies_rottentom, by=c('movie_title'='title')) 
+str(joined)
+```
+
+Now we plot:
+```{r}
+ggplot(joined, aes(x=imdb_score, y= rotten_tomatoes)) + geom_point() +geom_text_repel(aes(label= movie_title)) +xlab('IMDB Score') + ylab('Rotten Tomatoes Score') 
+```
+
+You can use library(gridExtra) to grid your plots. 
+
+```{r}
+drinks=read_delim("drinks/drinks_US.tsv",delim="\t")
+
+
+drinks_long=drinks %>% select(-total) %>% gather(key=type,value=gallons,beer:spirits)
+
+drinks_long
+```
+```{r}
+library(gridExtra)
+#faceting
+#area
+#color palettees
+#grid
+#text repel
+prob_begin <- 1920
+prob_end <- 1933
+plot1 <- ggplot(data= drinks_long, aes(x= year, y= gallons)) + geom_line() +geom_rect(aes(xmin =prob_begin, ymin = 0 , xmax= prob_end, ymax =max(drinks_long$gallons)), alpha = 0.5) +facet_grid(~type) +xlab('year')+ylab('gallons') 
+plot2 <- ggplot(data=drinks_long, aes(x=year, y= gallons, fill=type)) +geom_area() + geom_rect(aes(xmin =prob_begin, ymin = 0 , xmax= prob_end, ymax =max(drinks_long$gallons)) )
+
+grid.arrange(plot1,plot2, nrow =2)
+```
+```{r}
+plot3  <- ggplot(data= drinks_long, aes(x= year, y= gallons)) + geom_point(aes(col= type)) +geom_rect(data= drinks_long[1,], aes(xmin =prob_begin, ymin = min(drinks_long$gallons) , xmax= prob_end, ymax =max(drinks_long$gallons)), alpha =0.2,)  +xlab('year')+ylab('gallons') 
+plot3
+```
+
+```{r}
+ggsave(plot3, file = '~/Documents/Spring2019/PSYCH-531/drinks.pdf', width = 10, height =4)
+```
+
+
+## String Detection
+strdetect(actor_1_name,"on$") or strdetect(actor_1_name, '^Ch')
+str_subset(movies_imdb$genres,"Action")
+
+## Date Cleanup 
+
+Load the lubridate dataset. ymd() command transforms dates stored in character or numeric vectors to Date Class.
+
+```{r}
+#converts character vectors to date formatted
+library(lubridate)
+ymd(20101215)
+ymd("2010/12/15")
+ymd("2010Dec15")
+ymd("2010December15")
+date1=ymd("2010 Dec 15")
+
+year(date1)
+month(date1)
+mday(date1)
+
+class(date1)
+```
+
+
+## FOR Loops
+
+lapply() can be used for lists
+mapply() can be used for matrices
