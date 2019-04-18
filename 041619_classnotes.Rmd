@@ -102,3 +102,11 @@ class(date1)
 
 lapply() can be used for lists
 mapply() can be used for matrices
+
+
+```{r}
+library(ggrepel)
+library(ggpmisc)
+ggplot(joined, aes(x=imdb_score, y= rotten))
+```
+

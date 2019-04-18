@@ -1,0 +1,19 @@
+---
+title: "R Primer Notes"
+author: "Ezgi Irmak Yucel"
+date: "April 18, 2019"
+output: html_document
+---
+## Exploratory Data Analysis
+
+EDA is an iterative cycle built around asking and refining questions.
+    These two questions are always useful:
+        What type of variation occurs within my variables?
+        What type of covariation occurs between my variables?
+        
+Throughout the tutorial, you also encountered several recommendations for plots that visualize variation and covariation for categorical and continuous variables. Plots are a bit like questions in EDA: you should make many quickly and try anything that strikes your fancy. You can refine your plots later to share with others. A lot of refinement will occur naturally as you iterate during EDA.
+
+The suggestions below can serve as starting point for visualizing data. In the tutorials that follow, you will learn how to make each type of plot, as well as how to use best practices and advanced skills when visualizing data.
+```{r photo, echo=FALSE, fig.cap="Types of Plots for EDA", out.width = '70%'}
+knitr::include_graphics("plots-table.png")
+```
