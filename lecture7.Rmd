@@ -37,7 +37,7 @@ qqnorm(movies_joined$rotten_tomatoes)
 ## after z-scoring (to get on same scale) 
 qqnorm(scale(movies_joined$rotten_tomatoes),main = "Rotten Tomatoes")
 ## adding a line of x=y: slope (b) = 1 and intercept (a) = 0
-abline(a=0,b=1)
+abline(a=0,b=1,col="red",lwd=3)
 ```
 
 Let's do a quick quiz: which dataset is more normally distributed? 
@@ -55,7 +55,7 @@ Q-Q plots from the same distribution fall on the x=y line (slope=1, intercept=0)
 b=rnorm(1000) ## randomly draw 1000 samples from a normal distribution
 a=rnorm(1000) 
 qqplot(a,b)
-abline(0,1)
+abline(0,1,col="red",lwd=5)
 ```
 
 Challenge: let's plot the eCDFs for 1000 draws of a normal distribution, log-normal, and uniform. 
@@ -64,7 +64,10 @@ Do action movies have a higher IMDB score?
 ```{r}
 movies_imdb = files[["movies_imdb"]] %>% 
   mutate(action=str_detect(genres,"Action"))
-ggplot(movies_imdb,aes(x=imdb_score,fill=action))+geom_density(alpha=0.5)+scale_fill_brewer(palette = "Set1")
+
+ggplot(movies_imdb,aes(x=imdb_score,fill=action))+
+  geom_density(alpha=0.5)+
+  scale_fill_brewer(palette = "Set1")
 ``` 
 
 Correlations among variables
@@ -89,7 +92,7 @@ movies_joined %>%
 
 Spotting outliers
 ```{r}
-movies_imdb %>% 
+files[["movies_imdb"]] %>% 
   ggplot(aes(x=budget))+
   geom_histogram(bins=100)
 
@@ -98,7 +101,7 @@ movies_imdb %>%
 
 bringing them in closer (log scale)
 ```{r}
-movies_imdb %>% 
+files[["movies_imdb"]]  %>% 
   ggplot(aes(x=budget))+
   geom_histogram(bins=100)+
   scale_x_log10()
@@ -110,7 +113,7 @@ plotting multiple distributions
 library(ggridges)
 
 movies_imdb %>% 
-  mutate(action=str_detect(genres,"Comedy")) %>%
+  mutate(action=str_detect(genres,"Action")) %>%
   ggplot(aes(x=budget,y=action))+
   geom_density_ridges(colour="white",fill="steelblue4")+
   theme_classic(base_size=10) +
@@ -135,60 +138,4 @@ movies_imdb %>%
   theme_classic(base_size=10) +
   scale_x_log10()
 
-```
-
-
-Sampling from a distribution: Binomial
-```{r}
-cookie_jar=rep.int(x=c("chocolate chip", "oatmeal raisin"),times=c(150,150))
-
-sample(x=cookie_jar,size = 10)
-
-library(infer)
-tibble(cchip=cookie_jar)  %>% 
-  rep_sample_n(size = 10)
-```
-
-
-## sampling >1 time using the "rep_sample_n" function. Here we are sampling 100x
-```{r}
-tibble(cchip=cookie_jar)  %>% 
-  rep_sample_n(size = 10,reps = 100)
-```
-
-Now plot
-```{r}
-tibble(cchip=cookie_jar)  %>% 
-  rep_sample_n(size = 10,reps = 100) %>% 
-  group_by(replicate) %>% summarize(count=sum(cchip="chocolate chip")) %>%
-  ggplot(aes(x=count))+geom_histogram()
-```
-
-Can you show me what this looks like if we sample 100 cookies 1000 times?
-
-Fisher's exact and Hypergeometric tests (enrichment tests)
-``` {r}
-MandMs=rep.int(x=c("red", "orange", "yellow", "green", "blue", "brown"),times=c(12, 5, 10, 5, 6, 15))
-```
-
-call specific colors from data frame/tibble
-```{r}
-data.frame(mmcolor=MandMs) %>% 
-  ggplot(aes(x=mmcolor,fill=mmcolor))+
-  geom_bar() +
-  xlab("Color")
-
-data.frame(mmcolor=MandMs) %>% 
-  ggplot(aes(x=mmcolor,fill=I(mmcolor)))+
-  geom_bar() +
-  xlab("Color")
-```
-
-A binomial test, but without replacement, so it works well for small sample sizes
-```{r}
-## let's say we picked out 5 M&Ms. 4 were green and 1 was brown. Did we draw from an unbiased distribution? 
-grabbag=tibble(color=rep(x=c( "green", "brown"),times=c(4,1)))
-
-## we'll walk through this together
-phyper(4,5,48,5,lower.tail = F)
 ```
