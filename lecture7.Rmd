@@ -8,7 +8,7 @@ theme_set(theme_classic(base_size = 20))
 using lapply to make a list of files (save as object)
 ```{r}
 files=lapply(list.files(path = "movies",full.names = F, pattern = ".txt"),function(file_name){
-  read_delim(paste0("movies/",file_name),delim = ",")
+  read_delim(paste0("/home/ezgi/Documents/Spring2019/PSYCH-531/movies/",file_name),delim = ",")
 })
 
 files[[1]]

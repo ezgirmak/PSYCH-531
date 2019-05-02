@@ -1,0 +1,62 @@
+---
+title: "042319_classnotes"
+author: "Ezgi Irmak Yucel"
+date: "April 23, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+
+#no grid larger text 
+theme_set(theme_classic(base_size = 20)) 
+```
+
+```{r}
+movies_imdb=read_delim("/home/ezgi/Documents/Spring2019/PSYCH-531/movies/movies_imdb.txt",delim=",")
+movies_rottentom=read_delim("/home/ezgi/Documents/Spring2019/PSYCH-531/movies/movies_rottentom.txt",delim=",")
+str(movies_imdb)
+```
+
+```{r}
+movies_small <- movies_imdb%>%
+  filter(country== c('USA','UK', 'Germany','Turkey')) %>%
+  select(movie_title,title_year,duration,imdb_score, content_rating, language, budget, country)
+```
+
+```{r}
+ggplot(data=movies_small, aes(x=budget, fill=country))+geom_density()
+```
+
+```{r}
+qqnorm(scale(movies_rottentom$rotten_tomatoes), main = 'Rotten Tomatoes')
+abline(a=0, b=1, col='red', lwd=3)
+```
+```{r}
+qqnorm(scale(movies_imdb$imdb_score), main = 'Imdb Score')
+abline(a=0, b=1, col='red', lwd=3)
+```
+```{r}
+qqnorm(scale(movies_rottentom$metacritic), main = 'MetaCritic')
+abline(a=0, b=1, col='red', lwd=3)
+```
+
+```{r}
+metacritic_qqnorm <- qqnorm(scale(movies_rottentom$metacritic), plot.it = F)
+qqplot(scale(movies_joined$imdb_score), scale(movies_joined$rotten_tomatoes))
+abline(a=0, b=1, col='red', lwd=3)
+```
+```{r}
+library(corrplot)
+movies_joined%>%
+  select(imdb_score, rotten_tomatoes, metacritic, budget)%>%
+  na.omit()%>%
+  cor()%>%
+  corrplot()
+```
+
