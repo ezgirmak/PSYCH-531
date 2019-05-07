@@ -32,12 +32,12 @@ ggplot(movies_subset,aes(x=imdb_score,y=rotten_tomatoes))+
 
 ggplot(movies_subset,aes(x=imdb_score,y=rotten_tomatoes))+
   geom_point()+
-  geom_smooth(formula = "y~exp(x)") +
+  geom_smooth(formula = "y~exp(x)", method = 'lm') +
   ggtitle("exponential: y~exp(x)")
 
 ggplot(movies_subset,aes(x=imdb_score,y=rotten_tomatoes))+
   geom_point()+
-  geom_smooth(formula = "y~poly(x,2)") +
+  geom_smooth(formula = "y~poly(x,2)", method = 'lm') +
   ggtitle("quadratic: y~poly(x,2)")
 ```
 
@@ -73,7 +73,7 @@ bootstrap test for mediation
 ```{r} 
 nboot=1000
 boot_list=lapply(1:nboot,function(iteration){
-  boot_data=sample(mediation_data,replace = T) ## resample with replacement
+  boot_data=sample_n(mediation_data,replace = T, size=nrow(mediation_data)) ## resample with replacement
   m1=lm(Y~X,boot_data) ## model for c
   m2=lm(Y~X+M,boot_data)  ## model for c'
   c1=coef(m1)[2]

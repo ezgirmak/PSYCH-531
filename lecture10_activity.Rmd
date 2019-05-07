@@ -11,7 +11,7 @@ load in the data
 library(car)
 library(tidyverse)
 theme_set(theme_classic(base_size = 20)) 
-
+library(broom)
 data("Salaries")
 head(Salaries)
 ```
@@ -21,7 +21,9 @@ Using the Salaries dataset from the car package:
 1. filter these data to observations less than 25 years since the PhD. 
 2. plot salary as a function of years since PhD, discipline, and sex (in one or two plots)
 ```{r}
-
+Salaries %>%
+  filter(yrs.since.phd <25) %>%
+  ggplot(aes(x=yrs.since.phd, y=salary, col=discipline)) +geom_point()+facet_grid(~sex)
 ```
 
 
@@ -30,7 +32,8 @@ Fit a linear model predicting salary as a function of sex + yrs.since.phd + disc
 Look at the coefficients using tidy(). 
 
 ```{r}
-
+lm.fit <-glm(salary~sex+yrs.since.phd+discipline, data =Salaries)
+tidy(lm.fit)
 ```
 
 In this model, how much is salary expected to increase for each year after the phd?
@@ -39,13 +42,15 @@ Does the effect of years since phd depend on the sex of the professor?
 
 Test this by fitting a model with an interaction between sex and yrs.since.phd
 ```{r}
-
+int.fit<-glm(salary~ yrs.since.phd*sex +discipline, data = Salaries)
+tidy(int.fit)
 ```
 
 Using the diamonds data from the  ggplot2 package, filter this dataset to include only diamonds with Fair and Ideal cuts, and store the result in a new tibble called d.small.  The cut variable is stored as an ordered factor.  Change this to an unordered factor by first converting it to character, and then back to factor: as.character(), as.factor()
 ```{r}
+library(ggplot2)
 data("diamonds")
-diamonds = diamonds %>% filter(cut %in% c("Ideal","Fair"))
+diamonds <- diamonds %>% filter(cut %in% c("Ideal","Fair"))
 diamonds$cut = as.character(diamonds$cut)
 diamonds$cut = as.factor(diamonds$cut)
 ```
@@ -54,13 +59,14 @@ diamonds$cut = as.factor(diamonds$cut)
 plot mapping price to y and carat to x.  
 Add points and a geom_smooth(method = 'lm') and facet the plot by the cut variable
 ```{r}
+ggplot(diamonds, aes(x=carat, y=price))+geom_point(alpha=0.1)+ geom_smooth(formula = 'y~exp(x)', method='lm') +facet_grid(~cut)
 
 ```
 
 Fit a model predicting price as a function of carat, cut and the interaction of those two variables.  Is the interaction significant?
 ```{r}
-
-
+diam.fit<- glm(price~carat*cut, data=diamonds)
+tidy(diam.fit)
 ```
 
 
@@ -68,7 +74,7 @@ Look at the levels of the cut variable using the levels() function.
 What is the reference level?
 
 ```{r}
-
+levels(diamonds$cut)
 
 ```
 
