@@ -3,40 +3,83 @@ library(tidyverse)
 theme_set(theme_classic(base_size = 20)) 
 ```
 
+## Problem of Big P Little N
+What if we have too many predictors and sample size is small?
+
+1. Subset selection: via stepwise regression you can select the predictors
+2. Shrinkage methods: like lasso or ridge
+3. Dimension reduction: with tools like pca or factor analysis
+```{r}
+data(iris)
+log.ir <- log(iris[,1:4])
+ir.species <-iris[,5]
+
+
+#center and scale for PCA, mean 0, sd=1 but NOT NORMAL
+log.ir = scale(log.ir, center=TRUE, scale=TRUE)
+library(psych)
+fa.parallel(log.ir)
+dim(log.ir)
+```
+
+```{r}
+#pr comp has two main components center=TRUE, scale=FALSE by default
+#since we already did that we dont have to define it anymore
+ir.pca<-prcomp(log.ir)
+summary(ir.pca)
+```
+```{r}
+ir.pca$x[1:6,]
+```
+```{r}
+library(ggplot2)
+my.scores = as.data.frame(ir.pca$x)
+df = data.frame(species = ir.species, pc1=my.scores[,1])
+summary(lm(pc1~species, data=df))
+ggplot(data = df, aes(x= species, y= pc1, col = species)) +geom_jitter() +geom_boxplot()
+```
+
+Difference between PCA and FA is that factor analysis indicates there are some underlysing factor analysis where principal components do not have to be related to any theoretical basis.
 #PCA
 
+In PCA the components are independent from each other where in ICA they may be correlated.  How do we choose the number of components? We can look at the variance explained by the component. THrough eigenvalues. We can look at the scree plot where eigenvalue vs. the factor number as well Or we can do a parallel analysis by permuting the data or use the simulated date at different dimensions and calcultes the new eigen values. To answer the question what is the null distribution of the scree plot. 
 install the FactoMineR package, and then load the 'wine' data, and take a subsample (so we don't have too many points)
+
+
+
 ```{r}
 library(FactoMineR)
-
-wine=read_csv("wine/wine_data.csv")
+library(dplyr)
+library(tidyverse)
+wine=read_csv("/home/ezgi/Documents/Spring2019/PSYCH-531/wine/wine_data.csv")
 
 set.seed(10)
 wine_sample=wine[sample(1:nrow(wine),500),]
-
+summary(wine_sample)
 ```
 
 This dataset contains 12 colummns of data describing features about wine. Can we describe the  properties of these wines in a smaller number of dimensions?
 
 First limit the data to columns 1-12 and store it as a new object (ignore the wine color for now). We are only working with the numeric columns
 ```{r}
-
+wine_numeric <- wine_sample[,1:12]
 
 ```
 
 Run a parallel analysis (using fa.parallel() from the psych package) on the remaining wine variables.  How many components would be reasonable to extract?
 ```{r}
-
+fa.parallel(wine_numeric)
 ```
 
 
 Perform a principle components analysis using `prcomp` on these variables and save the results in a new object.  Set the arguments center and scale to be T when running the PCA.
 ```{r}
-
+wine.pca <-prcomp(wine_numeric, center=T, scale=T)
 ```
 
 Print a summary of the object you saved the pca in.  Look at the variance explained by each component.
 ```{r}
+summary(wine.pca)
 
 ```
 
@@ -49,7 +92,7 @@ library(factoextra)
 
 Look at the variable loadings on the first two PCs (the loadings are stored in $rotation).  Look for the highest and lowest loadings and think about what this component might reflect about a wine.  
 ```{r}
-
+wine.pca$rotation
 ```
 
 look at the variable loadings using the `fviz_pca_var()` function
@@ -60,19 +103,19 @@ look at the variable loadings using the `fviz_pca_var()` function
 
 Variables loading together on a compoment covary together. To look at this, identify a few variables with the strongest positive loadings on PC1 and look at their correlation with one another.  
 ```{r}
-
+cor(wine_numeric[,1], wine_numeric[,2])
 ```
 
 Now look at the correlation (in the raw data) between the variables with the strongest positive loading and the strongest negative loading on PC1
 ```{r}
-
+cor(wine_numeric)
+corrgram(wine_numeric)
 ```
 
 
 Plot the scores stored in `.$x` and color the points by the wine color 
 ```{r}
-Can you p
-
+wine.p
 ```
 If you've made it this far, now try and do the PCA, but without scaling your variables (`scale=F`)
 What things are different? What are similar? 
