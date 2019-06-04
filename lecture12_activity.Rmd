@@ -3,6 +3,7 @@ library(tidyverse)
 theme_set(theme_classic(base_size = 20)) 
 ```
 
+
 ## Problem of Big P Little N
 What if we have too many predictors and sample size is small?
 
@@ -115,7 +116,7 @@ corrgram(wine_numeric)
 
 Plot the scores stored in `.$x` and color the points by the wine color 
 ```{r}
-wine.p
+pro
 ```
 If you've made it this far, now try and do the PCA, but without scaling your variables (`scale=F`)
 What things are different? What are similar? 

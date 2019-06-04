@@ -1,13 +1,30 @@
 Read in the data
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggrepel)
+nba <- read_csv('./nba.csv')
+tail(nba)
 ```
 
 What is the date range of this season?
+```{r}
+ggplot(data=nba, aes(x=gmDate)) +geom_point()
+```
 
 What is the range of points scored in a game by one team? Which team scored the most points in a game? Which team scored the fewest? 
+```{r}
+head(nba)
+```
 
 Calculate the regular season (`seasTyp`) record (win/loss) for each team (hint: use `group_by()` and `summarize()` or `count()`)
+```{r}
+scores <- nba %>% group_by(teamAbbr)  %>% count(teamRslt)
+head(scores)
+
+ggplot(scores, aes(y= n , x = teamAbbr, fill = teamRslt)) + geom_bar( stat='identity')
+```
+
 ```{r}
 
 ```
@@ -18,18 +35,21 @@ If that was too easy, then calculate the record per month. Which team had the be
 
 Calculate a new variable, which is win% for each team. Then plot win % vs. average points per game (`teamPTS`)
 ```{r}
-
+nba%>% group_by(teamAbbr)%>% summarize(win_perc = sum(teamRslt == 'Win')/n(), avg_ppg = mean(teamPTS)) %>% ggplot(aes(x=avg_ppg , y= win_perc, label=teamAbbr)) + geom_point() +geom_label_repel()
 ```
 
 
 If that's too easy, then plot win % vs. average point differential (`teamPTS - opptPTS`)
 ```{r}
-
+nba%>% group_by(teamAbbr)%>% summarize(win_perc = sum(teamRslt == 'Win')/n(), dif_ppg = mean(teamPTS-opptPTS)) %>% ggplot(aes(x=dif_ppg , y= win_perc, label=teamAbbr)) + geom_point() +geom_label_repel()
 ```
 
 Now calculate wins/losses each for home and away games (`teamLoc`). Who had the best home record? Who had the best away record? Can you plot Home vs. Away win % (or number of wins)? 
-```{}
-
+```{r}
+nba %>% group_by(teamAbbr, teamLoc) %>% summarise(wins =  sum(teamRslt == 'Win')) %>%  ggplot() +geom_bar(aes(y= wins, x=teamAbbr, fill =teamLoc), stat= 'identity')
+```
+```{r}
+nba %>% group_by(teamAbbr, teamLoc) %>% summarise(win =  sum(teamRslt == 'Win')) %>% spread(key=teamLoc, value= win) %>% summarise(normalized_proportion = 100*Home/(Home+Away)) %>% ggplot(aes(x=teamAbbr, y= normalized_proportion)) +geom_point()
 ```
 
 Make that an interactive plotly plot. Try editing the `tooltip` text to show you the team for each data point.
